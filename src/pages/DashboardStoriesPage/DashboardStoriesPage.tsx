@@ -1,11 +1,12 @@
 import { Pagination } from "antd";
-import { debounce } from "lodash";
-import { useQuery, useQueryClient } from "react-query";
+import debounce from "lodash/debounce";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Link, createSearchParams, useNavigate } from "react-router-dom";
 import { adminApi } from "src/apis/admin.apis";
+import { storyApi } from "src/apis/story.apis";
 import ArrowLeftIcon from "src/components/Icon/ArrowLeftIcon";
 import ArrowRightIcon from "src/components/Icon/ArrowRightIcon";
-import EditIcon from "src/components/Icon/EditIcon";
+import useKeyboardJs from "react-use/lib/useKeyboardJs";
 import EllipsisIcon from "src/components/Icon/EllipsisIcon";
 import LongArrowDownIcon from "src/components/Icon/LongArrowDownIcon";
 import LongArrowUpIcon from "src/components/Icon/LongArrowUpIcon";
@@ -15,8 +16,10 @@ import Popover from "src/components/Popover";
 import SkeletonLoading from "src/components/SkeletonLoading";
 import { path } from "src/constants/path";
 import useStoriesQueryConfig from "src/hooks/useStoriesQueryConfig";
+import Swal from "sweetalert2";
 
 const DashboardUsersPage = () => {
+  const [isPressed] = useKeyboardJs("c + f");
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const queryConfig = useStoriesQueryConfig();
@@ -25,7 +28,9 @@ const DashboardUsersPage = () => {
     queryFn: () => adminApi.searchStoriesAdmin(queryConfig),
     staleTime: 1000 * 60 * 5,
     keepPreviousData: true,
-    refetchOnMount: false,
+  });
+  const deleteStoryMutation = useMutation({
+    mutationFn: storyApi.deleteStory,
   });
   const storyList = storyListData?.data.data.data;
   const userListTotal = storyListData?.data.data.totalRecord;
@@ -68,6 +73,24 @@ const DashboardUsersPage = () => {
       return <LongArrowDownIcon opacity={0.2} />;
     }
   };
+  const handleDeleteStory = async (storyId: string) => {
+    const { isConfirmed } = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to delete this story?",
+      icon: "question",
+      cancelButtonColor: "#EB5757",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+    });
+    if (isConfirmed) {
+      deleteStoryMutation.mutate(storyId, {
+        onSuccess: () => {
+          queryClient.invalidateQueries(["dashboardStories", queryConfig]);
+        },
+      });
+    }
+  };
   return (
     <>
       <div className="flex items-center justify-between">
@@ -76,6 +99,12 @@ const DashboardUsersPage = () => {
           <h2 className="text-xl font-medium text-lightGrey">Manage all of Froggy Blog stories</h2>
         </div>
         <div className="flex items-center gap-4">
+          <Link
+            to={path.DASHBOARD_PENDING_STORIES}
+            className="flex items-center justify-center px-3 py-2 bg-normalGreen hover:!bg-normalGreenHover text-white hover:!text-white"
+          >
+            Check pending stories
+          </Link>
           <input
             className="w-72 h-10 px-4 rounded-md border border-gray-200 focus:outline-none"
             placeholder="Search stories"
@@ -102,11 +131,11 @@ const DashboardUsersPage = () => {
         </div>
         <div
           className="col-span-1 font-medium cursor-pointer flex items-center gap-1"
-          onClick={() => handleSort("updateDate")}
+          onClick={() => handleSort("publishDate")}
           aria-hidden
         >
           <span>Published at</span>
-          {renderSortArrow("updateDate")}
+          {renderSortArrow("publishDate")}
         </div>
         <div className="col-span-1 font-medium cursor-pointer">Topics</div>
         <div className="col-span-1 font-medium cursor-pointer">Actions</div>
@@ -161,8 +190,8 @@ const DashboardUsersPage = () => {
           </div>
           <div className="col-span-1 font-medium cursor-pointer flex items-center gap-2">
             <Link
-              to={`/user/profile/${story.id}`}
-              className="flex items-center justify-center w-7 h-7 border border-gray-200 rounded cursor-pointe"
+              to={`/${story.id}`}
+              className="flex items-center justify-center w-7 h-7 border border-gray-200 rounded cursor-pointer"
             >
               <ShowPasswordIcon
                 width={20}
@@ -170,20 +199,43 @@ const DashboardUsersPage = () => {
                 color="#6b6b6b"
               ></ShowPasswordIcon>
             </Link>
-            <button className="flex items-center justify-center w-7 h-7 border border-gray-200 rounded cursor-pointe">
-              <EditIcon
-                width={20}
-                height={20}
-                color="#6b6b6b"
-              ></EditIcon>
-            </button>
-            <button className="flex items-center justify-center w-7 h-7 border border-gray-200 rounded cursor-pointe">
-              <TrashIcon
-                width={20}
-                height={20}
-                color="#6b6b6b"
-              ></TrashIcon>
-            </button>
+            <Popover
+              sameWidthWithChildren={false}
+              placement="bottom"
+              renderPopover={
+                <div
+                  className={`bg-black bg-opacity-60 p-2 max-w-[200px] text-center flex items-center justify-center text-white ${
+                    isPressed && "opacity-0 hidden"
+                  }`}
+                >
+                  You must hold c + f in order to press this button
+                </div>
+              }
+            >
+              {isPressed ? (
+                <button
+                  className="flex items-center justify-center w-7 h-7 border border-gray-200 rounded cursor-pointer"
+                  onClick={() => handleDeleteStory(story.id)}
+                >
+                  <TrashIcon
+                    width={20}
+                    height={20}
+                    color="#6b6b6b"
+                  ></TrashIcon>
+                </button>
+              ) : (
+                <button
+                  className="flex items-center justify-center w-7 h-7 border border-gray-200 opacity-50 rounded cursor-pointer"
+                  disabled
+                >
+                  <TrashIcon
+                    width={20}
+                    height={20}
+                    color="#6b6b6b"
+                  ></TrashIcon>
+                </button>
+              )}
+            </Popover>
           </div>
         </div>
       ))}

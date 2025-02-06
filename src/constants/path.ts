@@ -4,7 +4,9 @@ export const path = {
   STATISTICS: "/user/stats",
   DASHBOARD: "/dashboard/overview",
   DASHBOARD_TOPICS: "/dashboard/topics",
+  DASHBOARD_CREATE_TOPIC: "/dashboard/topic/create",
   DASHBOARD_STORIES: "/dashboard/stories",
+  DASHBOARD_PENDING_STORIES: "/dashboard/stories/pending",
   DASHBOARD_USERS: "/dashboard/users",
   DASHBOARD_REPORTS: "/dashboard/reports",
   ANONYMOUS_PROFILE: "/user/profile/:userId",
@@ -14,6 +16,7 @@ export const path = {
   STORY_DETAIL: "/:storyId",
   EDIT_PROFILE: "/user/profile/edit",
   EXPORE_TOPICS: "/explore-topics",
+  EXPORE_STORIES: "/explore-stories/:topicId",
   SEARCH: "/search",
   TAG: "/tag/:slug",
 } as const;

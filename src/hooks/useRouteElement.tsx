@@ -26,6 +26,9 @@ import DashboardTopicsPage from "src/pages/DashboardTopicsPage";
 import DashboardUsersPage from "src/pages/DashboardUsersPage";
 import DashboardStoriesPage from "src/pages/DashboardStoriesPage";
 import DashboardReportsPage from "src/pages/DashboardReportsPage";
+import DashboardCreateTopicPage from "src/pages/DashboardCreateTopicPage";
+import ExploreStoryPage from "src/pages/ExploreStoryPage";
+import DashboardPendingStoriesPage from "src/pages/DashboardPendingStoriesPage";
 
 export default function useRouteElement() {
   const routeElements = useRoutes([
@@ -77,6 +80,14 @@ export default function useRouteElement() {
         <ExploreLayout>
           <TagPage></TagPage>
         </ExploreLayout>
+      ),
+    },
+    {
+      path: path.EXPORE_STORIES,
+      element: (
+        <MainLayout>
+          <ExploreStoryPage></ExploreStoryPage>
+        </MainLayout>
       ),
     },
     {
@@ -174,6 +185,22 @@ export default function useRouteElement() {
           element: (
             <DashboardLayout>
               <DashboardReportsPage></DashboardReportsPage>
+            </DashboardLayout>
+          ),
+        },
+        {
+          path: path.DASHBOARD_CREATE_TOPIC,
+          element: (
+            <DashboardLayout>
+              <DashboardCreateTopicPage></DashboardCreateTopicPage>
+            </DashboardLayout>
+          ),
+        },
+        {
+          path: path.DASHBOARD_PENDING_STORIES,
+          element: (
+            <DashboardLayout>
+              <DashboardPendingStoriesPage></DashboardPendingStoriesPage>
             </DashboardLayout>
           ),
         },

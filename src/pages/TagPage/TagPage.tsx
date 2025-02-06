@@ -1,9 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { useInfiniteQuery, useQuery } from "react-query";
+import { useQuery } from "react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { storyApi } from "src/apis/story.apis";
 import { topicApi } from "src/apis/topic.apis";
-import Footer from "src/components/Footer";
 import HandledImage from "src/components/HandledImage";
 import ArrowLeftIcon from "src/components/Icon/ArrowLeftIcon";
 import ArrowRightIcon from "src/components/Icon/ArrowRightIcon";
@@ -14,7 +13,6 @@ import SaveToFavoritesIcon from "src/components/Icon/SaveToFavoritesIcon";
 import Popover from "src/components/Popover";
 import { AuthContext } from "src/contexts/auth.contexts";
 import { getCustomDate } from "src/utils/formatDate";
-import http from "src/utils/http";
 import { generateSlug, getFirstSegmentFromSlug, getIdFromSlug } from "src/utils/slugify";
 import { styled } from "styled-components";
 
@@ -72,22 +70,6 @@ const ExploreSelectionItem = styled.button`
   flex-shrink: 0;
   border-radius: 24px;
   cursor: pointer;
-`;
-
-const ExploreHeading = styled.h1`
-  font-size: 42px;
-  font-weight: 600;
-  text-align: center;
-  margin-top: 48px;
-`;
-
-const ExploreInputWrapper = styled.form`
-  background-color: #f9f9f9;
-  position: relative;
-  padding: 12px 16px;
-  border-radius: 36px;
-  margin: 32px auto 0;
-  width: 624px;
 `;
 
 const ExploreScrollRight = styled.div`
@@ -220,7 +202,7 @@ const TagMainStoryItem = styled(Link)`
 
 const TagPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, userProfile } = useContext(AuthContext);
+  const { isAuthenticated } = useContext(AuthContext);
   const [showLeftArrow, setShowLeftArrow] = useState<boolean>(false);
   const [showRightArrow, setShowRightArrow] = useState<boolean>(true);
   const exploreTopicsSectionRef = useRef<HTMLDivElement>(null);
@@ -317,7 +299,7 @@ const TagPage = () => {
         </TagMeta>
         <Link
           className="mt-4 flex w-max justify-center items-center bg-darkGrey font-medium shrink-0 text-white border border-darkGrey px-3 py-2 rounded-3xl transition-all hover:!text-white hover:!bg-darkGrey"
-          to={"/"}
+          to={`/explore-stories/${idFromSlug}`}
         >
           See more {topicName} stories
         </Link>
@@ -415,7 +397,7 @@ const TagPage = () => {
         </TagMainStoryGrid>
         <Link
           className="mt-16 flex w-max justify-center items-center bg-white font-medium shrink-0 text-darkGrey border border-darkGrey px-3 py-2 rounded-3xl transition-all hover:!text-white hover:!bg-darkGrey"
-          to={"/"}
+          to={`/explore-stories/${idFromSlug}`}
         >
           See more {topicName} stories
         </Link>

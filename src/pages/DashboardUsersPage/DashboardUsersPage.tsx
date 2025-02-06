@@ -1,18 +1,14 @@
-import { Pagination, PaginationProps } from "antd";
-import { debounce } from "lodash";
-import React from "react";
+import { Pagination } from "antd";
+import debounce from "lodash/debounce";
 import { useQuery, useQueryClient } from "react-query";
 import { Link, createSearchParams, useNavigate } from "react-router-dom";
 import { adminApi } from "src/apis/admin.apis";
 import ArrowLeftIcon from "src/components/Icon/ArrowLeftIcon";
 import ArrowRightIcon from "src/components/Icon/ArrowRightIcon";
-import EditIcon from "src/components/Icon/EditIcon";
 import EllipsisIcon from "src/components/Icon/EllipsisIcon";
 import LongArrowDownIcon from "src/components/Icon/LongArrowDownIcon";
 import LongArrowUpIcon from "src/components/Icon/LongArrowUpIcon";
-import SearchIcon from "src/components/Icon/SearchIcon";
 import ShowPasswordIcon from "src/components/Icon/ShowPasswordIcon";
-import TrashIcon from "src/components/Icon/TrashIcon";
 import SkeletonLoading from "src/components/SkeletonLoading";
 import { path } from "src/constants/path";
 import useAdminQueryConfig from "src/hooks/useAdminQueryConfig";
@@ -30,7 +26,6 @@ const DashboardUsersPage = () => {
     queryFn: () => adminApi.searchUserAdmin(queryConfig),
     staleTime: 1000 * 60 * 5,
     keepPreviousData: true,
-    refetchOnMount: false,
   });
   const userList = userListData?.data.data.data;
   const userListTotal = userListData?.data.data.totalRecord;
@@ -158,20 +153,6 @@ const DashboardUsersPage = () => {
                 color="#6b6b6b"
               ></ShowPasswordIcon>
             </Link>
-            <button className="flex items-center justify-center w-7 h-7 border border-gray-200 rounded cursor-pointe">
-              <EditIcon
-                width={20}
-                height={20}
-                color="#6b6b6b"
-              ></EditIcon>
-            </button>
-            <button className="flex items-center justify-center w-7 h-7 border border-gray-200 rounded cursor-pointe">
-              <TrashIcon
-                width={20}
-                height={20}
-                color="#6b6b6b"
-              ></TrashIcon>
-            </button>
           </div>
         </div>
       ))}

@@ -72,7 +72,7 @@ const StoryDetailPage = () => {
   const comments = commentsData?.data.data.data;
   const likeStoryMutation = useMutation({
     mutationFn: likeApi.toggleLike,
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["likesCount", storyId] });
     },
   });
@@ -83,7 +83,7 @@ const StoryDetailPage = () => {
     },
   });
   const storyIsAlreadyInSavedList = Boolean(savedStoriesData?.data.data.data.find((story) => story.id === idFromSlug));
-  const { data: storyDetailData, isLoading: storyDetailIsLoading } = useQuery({
+  const { data: storyDetailData } = useQuery({
     queryKey: ["story", storyId],
     queryFn: () => storyApi.getStoryById(idFromSlug as string),
   });
@@ -352,6 +352,12 @@ const StoryDetailPage = () => {
           </div>
           {storyDetailData?.data.data.content && (
             <div className="entry-content">{parse(storyDetailData.data.data.content as string)}</div>
+          )}
+          {storyDetailData?.data.data.credit && (
+            <div className="flex items-center justify-end gap-2">
+              <span className="text-base">Credits:</span>
+              <span className="text-base font-medium">{storyDetailData?.data.data.credit}</span>
+            </div>
           )}
           <div className="text-center lg:text-3xl tracking-widest text-2xl">. . .</div>
           <div className="flex items-center gap-2 flex-wrap mt-4">
